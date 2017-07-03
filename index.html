@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <style>
+            html, body, #map_canvas {
+                height: 100%;
+                margin: 0px;
+                padding: 0px;
+        }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3&amp;signed_in=true&amp;libraries=geometry"></script>
+    <script src="eshapes.js"></script>
+    <body>
+        <div id="map_canvas"></div>
+    </body>
+</html>
+
+<script>
+    var myCenter = new google.maps.LatLng(-23.5583108,-46.7018559);
+
+    var mapOptions = {
+    zoom: 14,
+    disableDoubleClickZoom: true,
+    center: myCenter,
+    mapTypeId: google.maps.MapTypeId.TERRAIN
+};
+
+var map = new google.maps.Map(document.getElementById('map_canvas'), mapOptions);
+var r1 = 50 * 1000; //50Km
+var r2 = 70 * 1000; //70Km
+var rotation = 60; //degree
+var strokeColour = '#990000';
+var strokeWeight = 0.9;
+var strokeOpacity = 0.9;
+var fillColour = '#990000';
+var fillOpacity = 0.7;
+
+                        //(point,r1,r2,rotation,strokeColour,strokeWeight,Strokepacity,fillColour,fillOpacity
+google.maps.Polygon.Ellipse(myCenter, r1, r2, rotation, strokeColour, strokeWeight, strokeOpacity, fillColour, fillOpacity).setMap(map);
+
+</script>

@@ -15,11 +15,11 @@
 
 // Version 1.1 port for use with Google Maps API v3 (Scott Alexander & Rob Day-Reynolds) 
 
-google.maps.Polyline.Shape = function(point,r1,r2,r3,r4,rotation,vertexCount,  colour,weight,opacity,opts,tilt) {
+google.maps.Polyline.Shape = function(point,r1,r2,r3,r4,rotation,vertexCount,colour,weight,opacity,opts,tilt) {
     var rot     = -rotation*Math.PI/180,
         points  = [],
-        latConv = point.distanceFrom(new google.maps.LatLng(point.lat()+0.1,point.lng()))*10,
-        lngConv = point.distanceFrom(new google.maps.LatLng(point.lat(),point.lng()+0.1))*10,
+        latConv = google.maps.geometry.spherical.computeDistanceBetween(point, new google.maps.LatLng(point.lat()+0.1, point.lng()))*10,
+        lngConv = google.maps.geometry.spherical.computeDistanceBetween(point, new google.maps.LatLng(point.lat(), point.lng()+0.1))*10,
         step    = (360/vertexCount)||10,
         flop    = -1,
         I1;
@@ -40,11 +40,12 @@ google.maps.Polyline.Shape = function(point,r1,r2,r3,r4,rotation,vertexCount,  c
 
         points.push(new google.maps.LatLng(point.lat()+lat,point.lng()+lng));
     }
+
 	return new google.maps.Polyline({
         path         : points,
         strokeColor  : colour,
         strokeWeight : weight,
-        strokeOpacity: opacity
+        strokeOpacity: opacity,
     });
 };
 
@@ -68,11 +69,11 @@ google.maps.Polyline.Ellipse = function(point,r1,r2,rotation,colour,weight,opaci
     return google.maps.Polyline.Shape(point,r1,r2,r1,r2,rotation,100,colour,weight,opacity,opts);
 };
 
-google.maps.Polygon.Shape = function(point,r1,r2,r3,r4,rotation,vertexCount,  strokeColour,strokeWeight,Strokepacity,fillColour,fillOpacity,opts,tilt) {
+google.maps.Polygon.Shape = function(point,r1,r2,r3,r4,rotation,vertexCount, strokeColour,strokeWeight,Strokepacity,fillColour,fillOpacity,opts,tilt) {
     var rot     = -rotation*Math.PI/180,
         points  = [],
-        latConv = point.distanceFrom(new google.maps.LatLng(point.lat()+0.1,point.lng()))*10,
-        lngConv = point.distanceFrom(new google.maps.LatLng(point.lat(),point.lng()+0.1))*10,
+        latConv = google.maps.geometry.spherical.computeDistanceBetween(point, new google.maps.LatLng(point.lat()+0.1, point.lng()))*10,
+        lngConv = google.maps.geometry.spherical.computeDistanceBetween(point, new google.maps.LatLng(point.lat(), point.lng()+0.1))*10,
         step    = (360/vertexCount)||10,
         flop    = -1,
         I1;
@@ -93,7 +94,20 @@ google.maps.Polygon.Shape = function(point,r1,r2,r3,r4,rotation,vertexCount,  st
 
         points.push(new google.maps.LatLng(point.lat()+lat,point.lng()+lng));
     }
-	return (new google.maps.Polygon(points,strokeColour,strokeWeight,Strokepacity,fillColour,fillOpacity,opts));
+	return new google.maps.Polygon({
+        paths: points,
+        strokeColor: strokeColour,
+        strokeOpacity: Strokepacity,
+        strokeWeight: strokeWeight,
+        fillColor: fillColour,
+        fillOpacity: fillOpacity
+    });
+};
+
+function EOffset(point,easting,northing) {
+    var latConv = point.distanceFrom(new google.maps.LatLng(point.lat()+0.1,point.lng()))*10;
+    var lngConv = point.distanceFrom(new google.maps.LatLng(point.lat(),point.lng()+0.1))*10;
+    return new google.maps.LatLng(point.lat()+northing/latConv,point.lng()+easting/lngConv);
 };
 
 google.maps.Polygon.Circle = function(point,radius,strokeColour,strokeWeight,Strokepacity,fillColour,fillOpacity,opts) {
@@ -116,11 +130,7 @@ google.maps.Polygon.Ellipse = function(point,r1,r2,rotation,strokeColour,strokeW
     return google.maps.Polygon.Shape(point,r1,r2,r1,r2,rotation,100,strokeColour,strokeWeight,Strokepacity,fillColour,fillOpacity,opts);
 }
 
-function EOffset(point,easting,northing) {
-    var latConv = point.distanceFrom(new google.maps.LatLng(point.lat()+0.1,point.lng()))*10;
-    var lngConv = point.distanceFrom(new google.maps.LatLng(point.lat(),point.lng()+0.1))*10;
-    return new google.maps.LatLng(point.lat()+northing/latConv,point.lng()+easting/lngConv);
-};
+
 
 function EOffsetBearing(point,dist,bearing) {
     var latConv = point.distanceFrom(new google.maps.LatLng(point.lat()+0.1,point.lng()))*10;
